@@ -2,6 +2,7 @@ import os
 import io
 import uuid
 from fastapi import FastAPI, File, UploadFile, HTTPException, Request
+from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -13,6 +14,7 @@ import numpy as np
 import re
 
 app = FastAPI()
+app.add_middleware(HTTPSRedirectMiddleware)
 
 UPLOAD_DIR = "uploads"
 SIGNATURE_DIR = "signatures"
