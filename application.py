@@ -16,14 +16,21 @@ import re
 app = FastAPI()
 app.add_middleware(HTTPSRedirectMiddleware)
 
-UPLOAD_DIR = "uploads"
-SIGNATURE_DIR = "signatures"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs(SIGNATURE_DIR, exist_ok=True)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
+SIGNATURE_DIR = os.path.join(BASE_DIR, "signatures")
+TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+for directory in [STATIC_DIR, UPLOAD_DIR, SIGNATURE_DIR, TEMPLATES_DIR]:
+    os.makedirs(directory, exist_ok=True)
+
+#os.makedirs(UPLOAD_DIR, exist_ok=True)
+#os.makedirs(SIGNATURE_DIR, exist_ok=True)
+
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 app.mount("/signatures", StaticFiles(directory=SIGNATURE_DIR), name="signatures")
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
 def preprocess_image(image):
     gray = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2GRAY)
