@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheque Signature Extractor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        #uploadForm {
+            margin-bottom: 20px;
+        }
+        #fileInput {
+            display: none;
+        }
+        .file-upload-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        #uploadBtn {
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        .signature-item {
+            background-color: #e9e9e9;
+            padding: 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .signature-image-container {
+            width: 100%;
+            max-width: 500px; /* Increased max-width */
+            margin: 0 auto;
+            text-align: center;
+            background-color: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .signature-image {
+            max-width: 100%;
+            height: auto;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cheque Signature Extractor</h1>
+        <form id="uploadForm">
+            <label for="fileInput" class="file-upload-btn">Choose PDF File</label>
+            <input type="file" id="fileInput" accept=".pdf" required>
+            <button type="submit" id="uploadBtn">Upload and Extract</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('fileInput');
+            const resultDiv = document.getElementById('result');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch('/upload-pdf/', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        displayResult(data);
+                    } else {
+                        resultDiv.innerHTML = '<p>Error: Unable to process the PDF.</p>';
+                    }
+                } catch (error) {
+                    resultDiv.innerHTML = '<p>Error: ' + error.message + '</p>';
+                }
+            }
+        });
+
+        function displayResult(result) {
+            const resultDiv = document.getElementById('result');
+            if (result.error) {
+                resultDiv.innerHTML = `<p>Error: ${result.error}</p>`;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="signature-item">
+                        <h2>Extracted Information:</h2>
+                        <p><strong>Name:</strong> ${result.name}</p>
+                        <p><strong>Signature:</strong></p>
+                        <div class="signature-image-container">
+                            <img src="${result.signature_image}" alt="Extracted Signature" class="signature-image">
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            let fileName = e.target.files[0].name;
+            document.querySelector('.file-upload-btn').textContent = fileName;
+        });
+    </script>
+</body>
+</html>

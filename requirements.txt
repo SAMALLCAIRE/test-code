@@ -1,0 +1,9 @@
+python==3.11
+fastapi 
+uvicorn 
+python-multipart 
+PyMuPDF 
+pytesseract 
+Pillow 
+opencv-python-headless 
+numpy
