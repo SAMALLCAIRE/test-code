@@ -18,9 +18,6 @@ app.add_middleware(HTTPSRedirectMiddleware)
 
 UPLOAD_DIR = "uploads"
 SIGNATURE_DIR = "signatures"
-static_dir = os.path.join(os.path.dirname(__file__), "static")
-if not os.path.exists(static_dir):
-    os.makedirs(static_dir)
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(SIGNATURE_DIR, exist_ok=True)
 
